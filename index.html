@@ -1,0 +1,1339 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Secret Hype Hub 💖 | Anonymous Bestie Compliments</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sacramento&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- FontAwesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', "sans-serif"],
+              display: ['"Fredoka"', "sans-serif"],
+              cursive: ['"Sacramento"', "cursive"],
+            },
+            colors: {
+              blush: {
+                50: "#fff5f8",
+                100: "#ffe4e9",
+                200: "#fccdd6",
+                300: "#f8a3b5",
+                400: "#f36d8d",
+                500: "#ee4374",
+                600: "#db245c",
+                700: "#b81647",
+                800: "#99153e",
+              },
+              rose: {
+                50: "#fff0f3",
+                100: "#ffe3e8",
+                200: "#fecdd6",
+                300: "#fda4af",
+                400: "#fb7185",
+                500: "#f43f5e",
+              },
+            },
+            animation: {
+              float: "float 4s ease-in-out infinite",
+              "pulse-heart": "pulseHeart 2s ease-in-out infinite",
+              "bounce-gentle": "bounceGentle 2s infinite",
+              "sparkle-rotate": "sparkleRotate 6s linear infinite",
+            },
+            keyframes: {
+              float: {
+                "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
+                "50%": { transform: "translateY(-8px) rotate(2deg)" },
+              },
+              pulseHeart: {
+                "0%, 100%": { transform: "scale(1)" },
+                "50%": { transform: "scale(1.08)" },
+              },
+              bounceGentle: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-4px)" },
+              },
+              sparkleRotate: {
+                "0%": { transform: "rotate(0deg)" },
+                "100%": { transform: "rotate(360deg)" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      body {
+        background: linear-gradient(
+          135deg,
+          #fff0f5 0%,
+          #ffe4e9 40%,
+          #fff7f9 70%,
+          #ffffff 100%
+        );
+        color: #4a212d;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Glassmorphism Styles */
+      .glass-panel {
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(252, 205, 214, 0.6);
+        box-shadow:
+          0 12px 30px -5px rgba(238, 67, 116, 0.08),
+          0 4px 12px rgba(0, 0, 0, 0.02);
+      }
+
+      .glass-panel-hover:hover {
+        border-color: rgba(243, 109, 141, 0.8);
+        box-shadow:
+          0 20px 35px -5px rgba(238, 67, 116, 0.16),
+          0 6px 16px rgba(238, 67, 116, 0.08);
+        transform: translateY(-2px);
+      }
+
+      .glass-input {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1.5px solid #fccdd6;
+        transition: all 0.25s ease;
+      }
+
+      .glass-input:focus {
+        background: #ffffff;
+        border-color: #ee4374;
+        box-shadow: 0 0 0 4px rgba(238, 67, 116, 0.15);
+        outline: none;
+      }
+
+      /* Rose Gold & Pink Gradients */
+      .pink-gradient-text {
+        background: linear-gradient(
+          135deg,
+          #db245c 0%,
+          #ee4374 50%,
+          #f43f5e 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .pink-gradient-btn {
+        background: linear-gradient(
+          135deg,
+          #f36d8d 0%,
+          #ee4374 50%,
+          #db245c 100%
+        );
+        transition: all 0.3s ease;
+      }
+
+      .pink-gradient-btn:hover {
+        box-shadow: 0 10px 25px -5px rgba(238, 67, 116, 0.4);
+        transform: scale(1.02);
+      }
+
+      /* Custom Scrollbars */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #fff5f8;
+        border-radius: 999px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #f8a3b5;
+        border-radius: 999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #ee4374;
+      }
+    </style>
+  </head>
+  <body
+    class="font-sans antialiased min-h-screen flex flex-col justify-between relative selection:bg-blush-300 selection:text-white"
+  >
+    <!-- Background Floating Hearts Canvas -->
+    <canvas
+      id="bgHeartsCanvas"
+      class="fixed inset-0 pointer-events-none z-0"
+    ></canvas>
+
+    <!-- Confetti Explosion Canvas -->
+    <canvas
+      id="confettiCanvas"
+      class="fixed inset-0 pointer-events-none z-50"
+    ></canvas>
+
+    <!-- Main Container -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+      <!-- Top Navigation -->
+      <header
+        class="sticky top-0 z-40 backdrop-blur-md bg-white/75 border-b border-blush-200/70 px-4 sm:px-8 py-3.5 transition-all"
+      >
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+          <!-- Logo -->
+          <a href="#home" class="flex items-center gap-3 group">
+            <div
+              class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blush-400 via-rose-400 to-blush-200 p-0.5 shadow-md shadow-blush-200 group-hover:rotate-12 transition-transform"
+            >
+              <div
+                class="w-full h-full bg-white rounded-[14px] flex items-center justify-center"
+              >
+                <i
+                  class="fa-solid fa-heart text-blush-500 text-lg group-hover:scale-110 transition-transform"
+                ></i>
+              </div>
+            </div>
+            <div>
+              <span
+                class="font-display font-bold text-xl text-slate-800 tracking-tight block leading-tight"
+              >
+                BS Economics Girlies <span class="pink-gradient-text">Hub</span>
+              </span>
+              <!-- <span
+                class="text-[10px] uppercase font-bold tracking-widest text-blush-400 block -mt-0.5"
+                > ✨</span
+              > -->
+            </div>
+          </a>
+
+          <!-- Header Actions -->
+          <div class="flex items-center gap-2.5">
+            <!-- Audio Sound Toggle -->
+            <button
+              id="audioToggleBtn"
+              onclick="toggleAudio()"
+              class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white hover:bg-blush-50 text-blush-600 border border-blush-200 flex items-center justify-center transition shadow-sm hover:scale-105"
+              title="Toggle Sound FX"
+            >
+              <i id="audioIcon" class="fa-solid fa-volume-high text-sm"></i>
+            </button>
+
+            <!-- Jump to Form Button -->
+            <a
+              href="#submitSection"
+              class="hidden xs:flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-full bg-blush-500 hover:bg-blush-600 text-white shadow-sm shadow-blush-300 transition hover:scale-105"
+            >
+              <i class="fa-solid fa-paper-plane text-xs"></i>
+              <span>Send Hype 💌</span>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Hero Banner -->
+      <section id="home" class="pt-8 pb-10 px-4 text-center relative">
+        <div class="max-w-3xl mx-auto relative z-10">
+          <h1
+            class="font-display font-bold text-3xl sm:text-5xl md:text-6xl text-slate-800 tracking-tight leading-tight mb-3"
+          >
+            Send Secret Love to Your <br class="hidden sm:inline" />
+            <span
+              class="pink-gradient-text font-cursive text-5xl sm:text-7xl font-normal lowercase block sm:inline"
+              >Favorite Girlies 💕</span
+            >
+          </h1>
+
+          <p
+            class="text-slate-600 text-sm sm:text-base max-w-xl mx-auto leading-relaxed mb-6 font-medium"
+          >
+            Type a friend's name below to drop a sweet, funny, or uplifting
+            anonymous message! If she doesn't have a box yet, a shiny new one
+            will be created instantly for her. 🎁✨
+          </p>
+        </div>
+      </section>
+
+      <!-- SUBMIT COMPLIMENT FORM SECTION -->
+      <section
+        id="submitSection"
+        class="px-4 mb-12 max-w-3xl mx-auto w-full relative z-20"
+      >
+        <div
+          class="glass-panel rounded-3xl p-6 sm:p-8 relative overflow-hidden"
+        >
+          <!-- Decorative Top Sparkle -->
+          <div
+            class="absolute top-0 right-0 w-32 h-32 bg-blush-200/40 rounded-full blur-2xl pointer-events-none"
+          ></div>
+
+          <div class="flex items-center gap-3 mb-6">
+            <div
+              class="w-10 h-10 rounded-2xl bg-blush-100 flex items-center justify-center text-blush-500 text-xl font-bold"
+            >
+              💌
+            </div>
+            <div>
+              <h2
+                class="font-display font-bold text-xl sm:text-2xl text-slate-800"
+              >
+                Send an Anonymous Note
+              </h2>
+              <p class="text-xs text-slate-500">
+                Spread smiles—nobody will know who sent it!
+              </p>
+            </div>
+          </div>
+
+          <form
+            id="complimentForm"
+            onsubmit="handleFormSubmit(event)"
+            class="space-y-5"
+          >
+            <!-- Recipient Field with Quick Selection Pills -->
+            <div>
+              <div class="flex justify-between items-center mb-1.5">
+                <label
+                  for="recipientInput"
+                  class="block text-xs font-bold uppercase tracking-wider text-slate-700"
+                >
+                  Who is this note for?
+                  <span class="text-blush-500">*</span>
+                </label>
+                <span class="text-[11px] text-blush-400 italic"
+                  >Type a name or pick below</span
+                >
+              </div>
+
+              <input
+                type="text"
+                id="recipientInput"
+                list="existingGirlsDatalist"
+                placeholder="e.g. Javeria, Eman, Anzila..."
+                required
+                class="glass-input w-full px-4 py-3 rounded-2xl text-sm text-slate-800 placeholder-slate-400 font-semibold"
+              />
+
+              <datalist id="existingGirlsDatalist">
+                <!-- Populated dynamically via JS -->
+              </datalist>
+
+              <!-- Quick Select Pills -->
+              <div
+                id="quickSelectContainer"
+                class="flex flex-wrap items-center gap-1.5 mt-2 hidden"
+              >
+                
+                <div id="quickSelectPills" class="flex flex-wrap gap-1.5">
+                  <!-- Injected dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Compliment Textarea -->
+            <div>
+              <div class="flex justify-between items-center mb-1.5">
+                <label
+                  for="messageInput"
+                  class="block text-xs font-bold uppercase tracking-wider text-slate-700"
+                >
+                  Your Anonymous Compliment
+                  <span class="text-blush-500">*</span>
+                </label>
+                <button
+                  type="button"
+                  onclick="generateRandomPrompt()"
+                  class="text-xs text-blush-500 hover:text-blush-700 font-bold flex items-center gap-1 transition"
+                >
+                  <i class="fa-solid fa-lightbulb text-amber-400"></i> Need an
+                  idea?
+                </button>
+              </div>
+
+              <div class="relative">
+                <textarea
+                  id="messageInput"
+                  rows="4"
+                  maxlength="300"
+                  required
+                  placeholder="Write something sweet, hilarious, or hype-filled..."
+                  oninput="updateCharCount()"
+                  class="glass-input w-full p-4 rounded-2xl text-sm text-slate-800 placeholder-slate-400 leading-relaxed resize-none"
+                ></textarea>
+
+                <div
+                  class="absolute bottom-3 right-4 text-[11px] font-bold text-slate-400"
+                >
+                  <span id="charCounter">0</span>/300
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              id="submitBtn"
+              class="pink-gradient-btn w-full py-3.5 rounded-2xl text-white font-display font-bold text-base tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-blush-200"
+            >
+              <i class="fa-solid fa-paper-plane text-sm"></i>
+              <span>Send the Compliment 💌</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- RECIPIENT BOXES SECTION -->
+      <section
+        id="boxesSection"
+        class="px-4 pb-20 max-w-6xl mx-auto w-full relative z-20"
+      >
+        <!-- Section Header & Filter Bar -->
+        <div
+          class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-8"
+        >
+          <div>
+            <h2
+              class="font-display font-bold text-2xl sm:text-3xl text-slate-800"
+            >
+              Compliment Boxes
+            </h2>
+            <p class="text-xs text-slate-500">
+              Every friend has her own dedicated box for incoming compliments!
+            </p>
+          </div>
+
+          <!-- Search & Filters Container -->
+          <div class="flex flex-col sm:flex-row items-center gap-3">
+            <!-- Search Input -->
+            <div class="relative w-full sm:w-60">
+              <i
+                class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"
+              ></i>
+              <input
+                type="text"
+                id="searchInput"
+                oninput="handleSearchAndFilter()"
+                placeholder="Search girl's name..."
+                class="glass-input w-full pl-9 pr-4 py-2 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400"
+              />
+            </div>
+
+            <!-- Filter Dropdown -->
+            <div class="relative w-full sm:w-auto">
+              <select
+                id="sortSelect"
+                onchange="handleSearchAndFilter()"
+                class="glass-input w-full px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white cursor-pointer"
+              >
+                <option value="most">🔥 Most Hype</option>
+                <option value="recent">⏰ Recently Active</option>
+                <option value="alpha">🔤 Alphabetical</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Grid Container -->
+        <div
+          id="boxesGrid"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          <!-- Dynamically generated boxes go here -->
+        </div>
+
+        <!-- Empty State Placeholder -->
+        <div
+          id="emptyState"
+          class="hidden glass-panel rounded-3xl p-12 text-center max-w-md mx-auto my-8"
+        >
+          <div
+            class="w-16 h-16 rounded-full bg-blush-100 text-blush-500 flex items-center justify-center text-3xl mx-auto mb-4 animate-bounce-gentle"
+          >
+            🌸
+          </div>
+          <h3 class="font-display font-bold text-xl text-slate-800 mb-1">
+            No Compliment Boxes Yet!
+          </h3>
+          <p class="text-xs text-slate-500 mb-6">
+            Be the first to send a secret note to your bestie and create
+            her box!
+          </p>
+          <a
+            href="#submitSection"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blush-500 text-white font-bold text-xs shadow-md shadow-blush-300 hover:bg-blush-600 transition"
+          >
+            <i class="fa-solid fa-plus"></i> Send First Compliment
+          </a>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer
+        class="py-8 px-4 border-t border-blush-200/60 bg-white/70 text-center text-xs text-slate-500 relative z-20"
+      >
+        <div
+          class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3"
+        >
+          <div class="flex items-center gap-1.5 font-semibold text-blush-600">
+            <i class="fa-solid fa-heart text-blush-500 animate-pulse-heart"></i>
+            <span>Created by MustanoMass</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-heart text-blush-500 animate-pulse-heart"></i>
+            <span>Anonymous Compliment Hub</span>
+            <span
+              id="syncStatusText"
+              class="text-[10px] px-2 py-0.5 rounded-full bg-blush-100 text-blush-600 font-bold"
+              >Connecting...</span
+            >
+          </div>
+          <div>
+            <!-- <button
+              onclick="clearDemoDataPrompt()"
+              class="text-slate-400 hover:text-blush-600 text-[11px] underline transition distable"
+            >
+              Reset Local Demo Data
+            </button> -->
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- SHARE BOX HIGHLIGHTS MODAL -->
+    <div
+      id="shareModal"
+      class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white w-full max-w-md rounded-3xl p-6 border border-blush-200 shadow-2xl relative text-slate-800"
+      >
+        <div
+          class="flex items-center justify-between border-b border-blush-100 pb-3 mb-4"
+        >
+          <div class="flex items-center gap-2">
+            <span class="text-xl">📋</span>
+            <h3
+              class="font-display font-bold text-lg text-slate-800"
+              id="shareModalTitle"
+            >
+              Share Box Highlights
+            </h3>
+          </div>
+          <button
+            onclick="closeShareModal()"
+            class="w-8 h-8 rounded-full bg-blush-50 hover:bg-blush-100 text-blush-600 flex items-center justify-center transition"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <p class="text-xs text-slate-500 mb-3">
+          Copy this cute summary to paste into your group chat!
+        </p>
+
+        <textarea
+          id="shareTextarea"
+          readonly
+          rows="6"
+          class="w-full p-3 rounded-2xl bg-blush-50 border border-blush-200 text-xs text-slate-700 font-sans font-medium focus:outline-none resize-none leading-relaxed mb-4"
+        ></textarea>
+
+        <div class="flex gap-2">
+          <button
+            onclick="copyShareText()"
+            class="pink-gradient-btn flex-1 py-2.5 rounded-xl text-white font-bold text-xs shadow-md flex items-center justify-center gap-2"
+          >
+            <i class="fa-solid fa-copy"></i> Copy to Clipboard
+          </button>
+          <button
+            onclick="closeShareModal()"
+            class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs transition"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div
+      id="toastContainer"
+      class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"
+    ></div>
+
+    <!-- Firebase Imports Module -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import {
+        getAuth,
+        signInAnonymously,
+        signInWithCustomToken,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import {
+        getFirestore,
+        collection,
+        doc,
+        addDoc,
+        updateDoc,
+        onSnapshot,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+      // =========================================================================
+      // 🔑 STEP 1: PASTE YOUR FIREBASE CONFIG HERE TO ENABLE LIVE SYNC FOR FRIENDS
+      // =========================================================================
+      const firebaseConfig = {
+        apiKey: "AIzaSyDRCOFT07ltPHhfSOTuPEAMIU-Az6cxOQU",
+        authDomain: "anonymous-compliment-model.firebaseapp.com",
+        projectId: "anonymous-compliment-model",
+        storageBucket: "anonymous-compliment-model.firebasestorage.app",
+        messagingSenderId: "1092525262550",
+        appId: "1:1092525262550:web:2d0c854968d7898bab2b77",
+        measurementId: "G-MS8NB2JBSN",
+      };
+      // =========================================================================
+
+      // Firebase Config and Variables
+      const appId =
+        typeof __app_id !== "undefined" ? __app_id : "bestie-compliment-portal";
+      let db = null;
+      let auth = null;
+      let currentUser = null;
+      let firestoreUnsubscribe = null;
+      let isUsingCustomFirebase = false;
+
+      // Tags List
+      const TAGS = [
+        { id: "sunshine", emoji: "💖", label: "Sunshine Energy" },
+        { id: "bestie", emoji: "✨", label: "Bestie Vibe" },
+        { id: "hype", emoji: "👑", label: "Hype Woman" },
+        { id: "style", emoji: "🌸", label: "Style Icon" },
+        { id: "mastermind", emoji: "🧠", label: "Mastermind" },
+        { id: "cozy", emoji: "🧸", label: "Cozy Comfort" },
+        { id: "main", emoji: "🌟", label: "Main Character" },
+        { id: "sweet", emoji: "🍰", label: "Sweet Soul" },
+      ];
+
+      // Prompt Suggestions
+      const PROMPT_IDEAS = [
+        "Your smile literally brightens up the whole room whenever you enter! ✨",
+        "Thank you for always being the most genuine and supportive friend ever 💖",
+        "You have the absolute best outfit style in our entire group! 🌸",
+        "Your laugh is so contagious, never stop being your amazing self 🌟",
+        "You deserve all the happiness, success, and iced matchas in the world! 👑",
+        "Thank you for being the person everyone can rely on no matter what 🧸",
+      ];
+
+      // Global State
+      window.complimentsData = [];
+      window.audioMuted = false;
+
+      /* Web Audio API Sound Engine */
+      class HypeAudioEngine {
+        constructor() {
+          this.ctx = null;
+        }
+        init() {
+          if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioCtx();
+          }
+          if (this.ctx.state === "suspended") {
+            this.ctx.resume();
+          }
+        }
+        playChime() {
+          if (window.audioMuted) return;
+          this.init();
+          const now = this.ctx.currentTime;
+          const freqs = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+          freqs.forEach((freq, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, now + i * 0.08);
+            gain.gain.setValueAtTime(0.2, now + i * 0.08);
+            gain.gain.exponentialRampToValueAtTime(
+              0.001,
+              now + i * 0.08 + 0.35,
+            );
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + i * 0.08);
+            osc.stop(now + i * 0.08 + 0.4);
+          });
+        }
+        playHeartPop() {
+          if (window.audioMuted) return;
+          this.init();
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.exponentialRampToValueAtTime(750, now + 0.09);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.11);
+        }
+      }
+
+      const audioEngine = new HypeAudioEngine();
+
+      window.toggleAudio = function () {
+        window.audioMuted = !window.audioMuted;
+        const icon = document.getElementById("audioIcon");
+        if (window.audioMuted) {
+          icon.className = "fa-solid fa-volume-xmark text-slate-400";
+          showToast("Sound Muted");
+        } else {
+          icon.className = "fa-solid fa-volume-high text-blush-600";
+          audioEngine.playHeartPop();
+          showToast("Sound Unmuted ✨");
+        }
+      };
+
+      /* Firebase Initialization & Realtime Sync */
+      async function initFirebase() {
+        try {
+          let firebaseConfig = null;
+
+          // Check if user filled in their custom Firebase config
+          if (
+            userFirebaseConfig &&
+            userFirebaseConfig.apiKey &&
+            userFirebaseConfig.projectId
+          ) {
+            firebaseConfig = userFirebaseConfig;
+            isUsingCustomFirebase = true;
+          } else if (
+            typeof __firebase_config !== "undefined" &&
+            __firebase_config
+          ) {
+            firebaseConfig = JSON.parse(__firebase_config);
+          }
+
+          if (firebaseConfig) {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // Auth first
+            if (
+              typeof __initial_auth_token !== "undefined" &&
+              __initial_auth_token &&
+              !isUsingCustomFirebase
+            ) {
+              const userCred = await signInWithCustomToken(
+                auth,
+                __initial_auth_token,
+              );
+              currentUser = userCred.user;
+            } else {
+              const userCred = await signInAnonymously(auth);
+              currentUser = userCred.user;
+            }
+
+            const statusEl = document.getElementById("syncStatusText");
+            if (statusEl) statusEl.innerText = "Live Cloud Sync 🟢";
+            setupRealtimeListener();
+          } else {
+            console.log(
+              "No Firebase config provided, using LocalStorage fallback.",
+            );
+            useLocalStorageFallback();
+          }
+        } catch (err) {
+          console.warn(
+            "Firebase init error, falling back to LocalStorage:",
+            err,
+          );
+          useLocalStorageFallback();
+        }
+      }
+
+      function getCollectionRef() {
+        if (isUsingCustomFirebase) {
+          return collection(db, "compliments");
+        }
+        return collection(
+          db,
+          "artifacts",
+          appId,
+          "public",
+          "data",
+          "compliments",
+        );
+      }
+
+      function setupRealtimeListener() {
+        if (!db || !currentUser) return;
+
+        const collectionRef = getCollectionRef();
+
+        firestoreUnsubscribe = onSnapshot(
+          collectionRef,
+          (snapshot) => {
+            const loaded = [];
+            snapshot.forEach((docSnap) => {
+              const data = docSnap.data();
+              loaded.push({
+                id: docSnap.id,
+                recipient: data.recipient || "Anonymous",
+                message: data.message || "",
+                likes: data.likes || 0,
+                createdAt: data.createdAt || Date.now(),
+              });
+            });
+
+            if (loaded.length > 0) {
+              window.complimentsData = loaded;
+            } else {
+              seedDefaultDataIfEmpty();
+            }
+            renderApp();
+          },
+          (error) => {
+            console.error("Firestore onSnapshot error:", error);
+            useLocalStorageFallback();
+          },
+        );
+      }
+
+      function useLocalStorageFallback() {
+        const statusEl = document.getElementById("syncStatusText");
+        if (statusEl) statusEl.innerText = "Local Offline Mode";
+        const saved = localStorage.getItem("bestie_compliments_data");
+        if (saved) {
+          try {
+            window.complimentsData = JSON.parse(saved);
+          } catch (e) {
+            seedDefaultDataIfEmpty();
+          }
+        } else {
+          seedDefaultDataIfEmpty();
+        }
+        renderApp();
+      }
+
+      function saveLocalData() {
+        localStorage.setItem(
+          "bestie_compliments_data",
+          JSON.stringify(window.complimentsData),
+        );
+      }
+
+      /* Submit New Compliment */
+      window.handleFormSubmit = async function (e) {
+        e.preventDefault();
+        const recipientInput = document
+          .getElementById("recipientInput")
+          .value.trim();
+        const messageInput = document
+          .getElementById("messageInput")
+          .value.trim();
+
+        if (!recipientInput || !messageInput) return;
+
+        const formattedName =
+          recipientInput.charAt(0).toUpperCase() + recipientInput.slice(1);
+
+        const newCompliment = {
+          recipient: formattedName,
+          message: messageInput,
+          likes: 0,
+          createdAt: Date.now(),
+        };
+
+        // Audio & Visual Effects
+        audioEngine.playChime();
+        triggerConfettiBurst();
+
+        // Store in Cloud or Local
+        if (db && currentUser) {
+          try {
+            const colRef = getCollectionRef();
+            await addDoc(colRef, newCompliment);
+          } catch (err) {
+            console.error("Firestore add error, fallback local:", err);
+            newCompliment.id = "local-" + Date.now();
+            window.complimentsData.unshift(newCompliment);
+            saveLocalData();
+            renderApp();
+          }
+        } else {
+          newCompliment.id = "local-" + Date.now();
+          window.complimentsData.unshift(newCompliment);
+          saveLocalData();
+          renderApp();
+        }
+
+        // Reset Form Inputs
+        document.getElementById("recipientInput").value = "";
+        document.getElementById("messageInput").value = "";
+        document.getElementById("charCounter").innerText = "0";
+
+        showToast(`Secret compliment delivered to ${formattedName}! 💌`);
+
+        setTimeout(() => {
+          const boxElem = document.getElementById(
+            `box-${formattedName.toLowerCase()}`,
+          );
+          if (boxElem) {
+            boxElem.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }, 300);
+      };
+
+      /* Like / Reaction Handler */
+      window.handleLikeCompliment = async function (id) {
+        audioEngine.playHeartPop();
+
+        const item = window.complimentsData.find((c) => c.id === id);
+        if (!item) return;
+
+        item.likes = (item.likes || 0) + 1;
+
+        if (
+          db &&
+          currentUser &&
+          !id.startsWith("seed-") &&
+          !id.startsWith("local-")
+        ) {
+          try {
+            const docRef = isUsingCustomFirebase
+              ? doc(db, "compliments", id)
+              : doc(
+                  db,
+                  "artifacts",
+                  appId,
+                  "public",
+                  "data",
+                  "compliments",
+                  id,
+                );
+            await updateDoc(docRef, { likes: item.likes });
+          } catch (err) {
+            console.error("Error updating likes in Firestore:", err);
+            saveLocalData();
+          }
+        } else {
+          saveLocalData();
+        }
+        renderApp();
+      };
+
+      window.updateCharCount = function () {
+        const val = document.getElementById("messageInput").value;
+        document.getElementById("charCounter").innerText = val.length;
+      };
+
+      window.generateRandomPrompt = function () {
+        const random =
+          PROMPT_IDEAS[Math.floor(Math.random() * PROMPT_IDEAS.length)];
+        const textInput = document.getElementById("messageInput");
+        textInput.value = random;
+        window.updateCharCount();
+        audioEngine.playHeartPop();
+      };
+
+      window.prefillRecipient = function (name) {
+        const input = document.getElementById("recipientInput");
+        input.value = name;
+        document
+          .getElementById("submitSection")
+          .scrollIntoView({ behavior: "smooth" });
+        input.focus();
+        audioEngine.playHeartPop();
+      };
+
+      /* Core UI Rendering Function */
+      window.renderApp = function () {
+        // Group compliments by recipient (case-insensitive key)
+        const grouped = {};
+        window.complimentsData.forEach((item) => {
+          const rawName = (item.recipient || "Anonymous").trim();
+          const key = rawName.toLowerCase();
+
+          if (!grouped[key]) {
+            grouped[key] = {
+              displayName: rawName.charAt(0).toUpperCase() + rawName.slice(1),
+              items: [],
+            };
+          }
+          grouped[key].items.push(item);
+        });
+
+        const uniqueNames = Object.values(grouped).map((g) => g.displayName);
+
+        // Update Quick Pick Pills & Datalist
+        updateDatalistAndPills(uniqueNames);
+
+        // Filter & Search
+        const searchQuery = (document.getElementById("searchInput").value || "")
+          .toLowerCase()
+          .trim();
+        const sortBy = document.getElementById("sortSelect").value;
+
+        let boxesArray = Object.values(grouped);
+
+        // Filter by search
+        if (searchQuery) {
+          boxesArray = boxesArray.filter((b) =>
+            b.displayName.toLowerCase().includes(searchQuery),
+          );
+        }
+
+        // Sort boxes
+        if (sortBy === "most") {
+          boxesArray.sort((a, b) => b.items.length - a.items.length);
+        } else if (sortBy === "recent") {
+          boxesArray.sort((a, b) => {
+            const maxA = Math.max(...a.items.map((i) => i.createdAt));
+            const maxB = Math.max(...b.items.map((i) => i.createdAt));
+            return maxB - maxA;
+          });
+        } else if (sortBy === "alpha") {
+          boxesArray.sort((a, b) => a.displayName.localeCompare(b.displayName));
+        }
+
+        const grid = document.getElementById("boxesGrid");
+        const emptyState = document.getElementById("emptyState");
+
+        if (boxesArray.length === 0) {
+          grid.innerHTML = "";
+          emptyState.classList.remove("hidden");
+          return;
+        } else {
+          emptyState.classList.add("hidden");
+        }
+
+        // Render Girl Boxes Grid
+        grid.innerHTML = "";
+
+        boxesArray.forEach((box) => {
+          // Sort box items by newest first
+          box.items.sort((a, b) => b.createdAt - a.createdAt);
+
+          const card = document.createElement("div");
+          card.id = `box-${box.displayName.toLowerCase()}`;
+          card.className =
+            "glass-panel glass-panel-hover rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 relative";
+
+          card.innerHTML = `
+                    <div>
+                        <!-- Box Header -->
+                        <div class="flex items-center justify-between border-b border-blush-200/60 pb-4 mb-4">
+                            <div class="flex items-center gap-3">
+                                <!-- Avatar Circle -->
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blush-400 via-rose-400 to-blush-200 p-0.5 shadow-md flex items-center justify-center">
+                                    <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center font-display font-bold text-xl text-blush-600">
+                                        ${box.displayName.charAt(0)}
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="font-display font-bold text-xl text-slate-800 leading-snug">${box.displayName}</h3>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <button onclick="openShareModal('${box.displayName}')" class="w-8 h-8 rounded-full bg-blush-50 hover:bg-blush-100 text-blush-600 flex items-center justify-center transition" title="Share Box Highlights">
+                                <i class="fa-solid fa-share-nodes text-xs"></i>
+                            </button>
+                        </div>
+
+                        <!-- Compliments Scroll Feed -->
+                        <div class="space-y-3 max-h-[320px] overflow-y-auto pr-1">
+                            ${box.items
+                              .map(
+                                (item) => `
+                                <div class="bg-white/90 border border-blush-100 rounded-2xl p-4 shadow-sm text-left transition hover:border-blush-300 relative group">
+                                    <div class="flex items-center justify-end gap-2 mb-2">
+                                        <span class="text-[10px] text-slate-400 font-semibold">${formatTime(item.createdAt)}</span>
+                                    </div>
+
+                                    <p class="text-xs text-slate-700 leading-relaxed font-medium mb-3">
+                                        "${escapeHtml(item.message)}"
+                                    </p>
+
+                                    <div class="flex items-center justify-between border-t border-slate-100 pt-2">
+                                        <span class="text-[10px] italic text-slate-400">~ Secret Bestie 💌</span>
+                                        <button onclick="handleLikeCompliment('${item.id}')" class="flex items-center gap-1 text-blush-600 text-xs font-bold transition active:scale-125">
+                                            <i class="fa-solid fa-heart text-blush-500"></i>
+                                            <span>${item.likes || 0}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            `,
+                              )
+                              .join("")}
+                        </div>
+                    </div>
+
+                    <!-- Direct Add Hype Button -->
+                    <div class="mt-5 pt-3 border-t border-blush-200/50">
+                        <button onclick="prefillRecipient('${box.displayName}')" class="w-full py-2.5 rounded-2xl bg-blush-50 hover:bg-blush-500 hover:text-white border border-blush-200 text-blush-600 font-bold text-xs transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>Add Secret Note to ${box.displayName}</span>
+                        </button>
+                    </div>
+                `;
+
+          grid.appendChild(card);
+        });
+      };
+
+      function updateDatalistAndPills(names) {
+        const datalist = document.getElementById("existingGirlsDatalist");
+        datalist.innerHTML = names.map((n) => `<option value="${n}">`).join("");
+
+        const pillsContainer = document.getElementById("quickSelectPills");
+        const wrapper = document.getElementById("quickSelectContainer");
+
+        if (names.length > 0) {
+          wrapper.classList.remove("hidden");
+          pillsContainer.innerHTML = names
+            .slice(0, 6)
+            .map(
+              (n) => `
+                    <button type="button" onclick="prefillRecipient('${n}')" class="px-2.5 py-1 rounded-full bg-blush-100 hover:bg-blush-200 text-blush-700 text-[11px] font-bold transition">
+                        + ${n}
+                    </button>
+                `,
+            )
+            .join("");
+        } else {
+          wrapper.classList.add("hidden");
+        }
+      }
+
+      window.handleSearchAndFilter = function () {
+        renderApp();
+      };
+
+      /* Share Modal Logic */
+      window.openShareModal = function (displayName) {
+        const items = window.complimentsData.filter(
+          (c) => c.recipient.toLowerCase() === displayName.toLowerCase(),
+        );
+
+        let summaryText = `💖 Secret Hype Box for ${displayName} 💖\n\n`;
+        items.forEach((item, idx) => {
+          summaryText += `${idx + 1}. "${item.message}"\n\n`;
+        });
+        summaryText += `✨ Send your own anonymous compliment to ${displayName}! 💕`;
+
+        document.getElementById("shareModalTitle").innerText =
+          `${displayName}'s Hype Highlights`;
+        document.getElementById("shareTextarea").value = summaryText;
+        document.getElementById("shareModal").classList.remove("hidden");
+        audioEngine.playHeartPop();
+      };
+
+      window.closeShareModal = function () {
+        document.getElementById("shareModal").classList.add("hidden");
+      };
+
+      window.copyShareText = function () {
+        const textarea = document.getElementById("shareTextarea");
+        textarea.select();
+        document.execCommand("copy");
+        showToast("Box highlights copied to clipboard! 📋");
+        audioEngine.playHeartPop();
+        closeShareModal();
+      };
+
+      /* Toast Notifications */
+      function showToast(msg) {
+        const container = document.getElementById("toastContainer");
+        const toast = document.createElement("div");
+        toast.className =
+          "bg-white border border-blush-300 text-blush-700 font-bold text-xs px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-auto";
+        toast.innerHTML = `
+                <i class="fa-solid fa-sparkles text-blush-500"></i>
+                <span>${msg}</span>
+            `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.classList.remove("translate-y-4", "opacity-0");
+        }, 10);
+
+        setTimeout(() => {
+          toast.classList.add("opacity-0", "translate-y-4");
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      /* Canvas Particle Effects */
+      const bgCanvas = document.getElementById("bgHeartsCanvas");
+      const bgCtx = bgCanvas.getContext("2d");
+      let bgParticles = [];
+
+      function resizeBgCanvas() {
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+      }
+
+      class FloatingHeart {
+        constructor() {
+          this.reset();
+        }
+        reset() {
+          this.x = Math.random() * bgCanvas.width;
+          this.y = Math.random() * bgCanvas.height;
+          this.size = Math.random() * 12 + 6;
+          this.speedY = Math.random() * 0.4 + 0.1;
+          this.opacity = Math.random() * 0.4 + 0.1;
+        }
+        update() {
+          this.y -= this.speedY;
+          if (this.y < -20) this.y = bgCanvas.height + 20;
+        }
+        draw() {
+          bgCtx.save();
+          bgCtx.globalAlpha = this.opacity;
+          bgCtx.fillStyle = "#f8a3b5";
+          bgCtx.font = `${this.size}px sans-serif`;
+          bgCtx.fillText("💖", this.x, this.y);
+          bgCtx.restore();
+        }
+      }
+
+      function initBgParticles() {
+        resizeBgCanvas();
+        bgParticles = [];
+        for (let i = 0; i < 25; i++) bgParticles.push(new FloatingHeart());
+      }
+
+      function animateBgParticles() {
+        bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+        bgParticles.forEach((p) => {
+          p.update();
+          p.draw();
+        });
+        requestAnimationFrame(animateBgParticles);
+      }
+
+      /* Confetti Burst */
+      const confettiCanvas = document.getElementById("confettiCanvas");
+      const confettiCtx = confettiCanvas.getContext("2d");
+      let confettiPieces = [];
+
+      function resizeConfettiCanvas() {
+        confettiCanvas.width = window.innerWidth;
+        confettiCanvas.height = window.innerHeight;
+      }
+
+      class HeartConfetti {
+        constructor() {
+          this.x = confettiCanvas.width / 2;
+          this.y = confettiCanvas.height / 3;
+          this.size = Math.random() * 14 + 8;
+          this.speedX = (Math.random() - 0.5) * 14;
+          this.speedY = (Math.random() - 0.8) * 16;
+          this.gravity = 0.3;
+          this.opacity = 1;
+        }
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+          this.speedY += this.gravity;
+          this.opacity -= 0.015;
+        }
+        draw() {
+          confettiCtx.save();
+          confettiCtx.globalAlpha = Math.max(0, this.opacity);
+          confettiCtx.font = `${this.size}px sans-serif`;
+          confettiCtx.fillText("💖", this.x, this.y);
+          confettiCtx.restore();
+        }
+      }
+
+      function triggerConfettiBurst() {
+        resizeConfettiCanvas();
+        for (let i = 0; i < 60; i++) confettiPieces.push(new HeartConfetti());
+      }
+
+      function animateConfetti() {
+        confettiCtx.clearRect(
+          0,
+          0,
+          confettiCanvas.width,
+          confettiCanvas.height,
+        );
+        confettiPieces = confettiPieces.filter((p) => p.opacity > 0);
+        confettiPieces.forEach((p) => {
+          p.update();
+          p.draw();
+        });
+        requestAnimationFrame(animateConfetti);
+      }
+
+      /* Helper Utilities */
+      function formatTime(timestamp) {
+        if (!timestamp) return "Just now";
+        const diff = Date.now() - timestamp;
+        if (diff < 60000) return "Just now";
+        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+        return new Date(timestamp).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      function escapeHtml(str) {
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      window.clearDemoDataPrompt = function () {
+        localStorage.removeItem("bestie_compliments_data");
+        window.complimentsData = [];
+        seedDefaultDataIfEmpty();
+        renderApp();
+        showToast("Reset to default demo compliments");
+      };
+
+      /* Lifecycle Onload */
+      window.addEventListener("resize", () => {
+        resizeBgCanvas();
+        resizeConfettiCanvas();
+      });
+
+      window.addEventListener("DOMContentLoaded", () => {
+        initFirebase();
+        initBgParticles();
+        animateBgParticles();
+        animateConfetti();
+
+        document.body.addEventListener(
+          "click",
+          () => {
+            audioEngine.init();
+          },
+          { once: true },
+        );
+      });
+    </script>
+  </body>
+</html>
