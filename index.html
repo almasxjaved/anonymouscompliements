@@ -335,7 +335,6 @@
                 id="quickSelectContainer"
                 class="flex flex-wrap items-center gap-1.5 mt-2 hidden"
               >
-                
                 <div id="quickSelectPills" class="flex flex-wrap gap-1.5">
                   <!-- Injected dynamically -->
                 </div>
@@ -467,8 +466,8 @@
             No Compliment Boxes Yet!
           </h3>
           <p class="text-xs text-slate-500 mb-6">
-            Be the first to send a secret note to your bestie and create
-            her box!
+            Be the first to send a secret note to your bestie and create her
+            box!
           </p>
           <a
             href="#submitSection"
@@ -500,12 +499,12 @@
             >
           </div>
           <div>
-            <!-- <button
+            <button
               onclick="clearDemoDataPrompt()"
               class="text-slate-400 hover:text-blush-600 text-[11px] underline transition distable"
             >
               Reset Local Demo Data
-            </button> -->
+            </button>
           </div>
         </div>
       </footer>
@@ -587,6 +586,7 @@
         doc,
         addDoc,
         updateDoc,
+        increment,
         onSnapshot,
       } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -709,149 +709,78 @@
 
       /* Firebase Initialization & Realtime Sync */
       async function initFirebase() {
+        const statusEl = document.getElementById("syncStatusText");
+        if (statusEl) statusEl.innerText = "Connecting to cloud…";
+
         try {
-          let firebaseConfig = null;
+          const app = initializeApp(firebaseConfig);
+          db = getFirestore(app);
+          auth = getAuth(app);
 
-          // Check if user filled in their custom Firebase config
-          if (
-            userFirebaseConfig &&
-            userFirebaseConfig.apiKey &&
-            userFirebaseConfig.projectId
-          ) {
-            firebaseConfig = userFirebaseConfig;
-            isUsingCustomFirebase = true;
-          } else if (
-            typeof __firebase_config !== "undefined" &&
-            __firebase_config
-          ) {
-            firebaseConfig = JSON.parse(__firebase_config);
-          }
-
-          if (firebaseConfig) {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-
-            // Auth first
-            if (
-              typeof __initial_auth_token !== "undefined" &&
-              __initial_auth_token &&
-              !isUsingCustomFirebase
-            ) {
-              const userCred = await signInWithCustomToken(
-                auth,
-                __initial_auth_token,
-              );
-              currentUser = userCred.user;
-            } else {
-              const userCred = await signInAnonymously(auth);
-              currentUser = userCred.user;
-            }
-
-            const statusEl = document.getElementById("syncStatusText");
-            if (statusEl) statusEl.innerText = "Live Cloud Sync 🟢";
-            setupRealtimeListener();
-          } else {
-            console.log(
-              "No Firebase config provided, using LocalStorage fallback.",
-            );
-            useLocalStorageFallback();
-          }
+          // Each visitor signs in anonymously; Firestore rules must allow
+          // authenticated anonymous users to read and create compliments.
+          const userCred = await signInAnonymously(auth);
+          currentUser = userCred.user;
+          setupRealtimeListener();
         } catch (err) {
-          console.warn(
-            "Firebase init error, falling back to LocalStorage:",
-            err,
-          );
-          useLocalStorageFallback();
+          console.error("Firebase initialization error:", err);
+          if (statusEl) statusEl.innerText = "Cloud connection failed 🔴";
+          showToast("Could not connect to Firebase. Check the console and Firebase settings.");
         }
       }
 
+      // All visitors use this one shared collection in the same Firebase project.
       function getCollectionRef() {
-        if (isUsingCustomFirebase) {
-          return collection(db, "compliments");
-        }
-        return collection(
-          db,
-          "artifacts",
-          appId,
-          "public",
-          "data",
-          "compliments",
-        );
+        if (!db) throw new Error("Firebase is not connected.");
+        return collection(db, "compliments");
       }
 
       function setupRealtimeListener() {
         if (!db || !currentUser) return;
 
-        const collectionRef = getCollectionRef();
-
         firestoreUnsubscribe = onSnapshot(
-          collectionRef,
+          getCollectionRef(),
           (snapshot) => {
-            const loaded = [];
-            snapshot.forEach((docSnap) => {
+            window.complimentsData = snapshot.docs.map((docSnap) => {
               const data = docSnap.data();
-              loaded.push({
+              return {
                 id: docSnap.id,
                 recipient: data.recipient || "Anonymous",
                 message: data.message || "",
                 likes: data.likes || 0,
                 createdAt: data.createdAt || Date.now(),
-              });
+              };
             });
 
-            if (loaded.length > 0) {
-              window.complimentsData = loaded;
-            } else {
-              seedDefaultDataIfEmpty();
-            }
+            const statusEl = document.getElementById("syncStatusText");
+            if (statusEl) statusEl.innerText = "Live Cloud Sync 🟢";
             renderApp();
           },
           (error) => {
-            console.error("Firestore onSnapshot error:", error);
-            useLocalStorageFallback();
+            console.error("Firestore realtime listener error:", error);
+            const statusEl = document.getElementById("syncStatusText");
+            if (statusEl) statusEl.innerText = "Firestore access error 🔴";
+            showToast("Could not load shared compliments. Check Firestore rules.");
           },
         );
       }
 
-      function useLocalStorageFallback() {
-        const statusEl = document.getElementById("syncStatusText");
-        if (statusEl) statusEl.innerText = "Local Offline Mode";
-        const saved = localStorage.getItem("bestie_compliments_data");
-        if (saved) {
-          try {
-            window.complimentsData = JSON.parse(saved);
-          } catch (e) {
-            seedDefaultDataIfEmpty();
-          }
-        } else {
-          seedDefaultDataIfEmpty();
-        }
-        renderApp();
-      }
-
-      function saveLocalData() {
-        localStorage.setItem(
-          "bestie_compliments_data",
-          JSON.stringify(window.complimentsData),
-        );
-      }
-
-      /* Submit New Compliment */
+      /* Submit New Compliment — cloud only, so success means it was saved */
       window.handleFormSubmit = async function (e) {
         e.preventDefault();
-        const recipientInput = document
-          .getElementById("recipientInput")
-          .value.trim();
-        const messageInput = document
-          .getElementById("messageInput")
-          .value.trim();
+        const recipientField = document.getElementById("recipientInput");
+        const messageField = document.getElementById("messageInput");
+        const submitBtn = document.getElementById("submitBtn");
+        const recipientInput = recipientField.value.trim();
+        const messageInput = messageField.value.trim();
 
         if (!recipientInput || !messageInput) return;
+        if (!db || !currentUser) {
+          showToast("Not connected to the shared database. Please try again shortly.");
+          return;
+        }
 
-        const formattedName =
-          recipientInput.charAt(0).toUpperCase() + recipientInput.slice(1);
-
+        const formattedName = recipientInput.charAt(0).toUpperCase() + recipientInput.slice(1);
         const newCompliment = {
           recipient: formattedName,
           message: messageInput,
@@ -859,82 +788,45 @@
           createdAt: Date.now(),
         };
 
-        // Audio & Visual Effects
-        audioEngine.playChime();
-        triggerConfettiBurst();
+        submitBtn.disabled = true;
+        const originalButtonHtml = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-sm"></i><span>Sending…</span>';
 
-        // Store in Cloud or Local
-        if (db && currentUser) {
-          try {
-            const colRef = getCollectionRef();
-            await addDoc(colRef, newCompliment);
-          } catch (err) {
-            console.error("Firestore add error, fallback local:", err);
-            newCompliment.id = "local-" + Date.now();
-            window.complimentsData.unshift(newCompliment);
-            saveLocalData();
-            renderApp();
-          }
-        } else {
-          newCompliment.id = "local-" + Date.now();
-          window.complimentsData.unshift(newCompliment);
-          saveLocalData();
-          renderApp();
+        try {
+          await addDoc(getCollectionRef(), newCompliment);
+          audioEngine.playChime();
+          triggerConfettiBurst();
+          recipientField.value = "";
+          messageField.value = "";
+          document.getElementById("charCounter").innerText = "0";
+          showToast(`Secret compliment delivered to ${formattedName}! 💌`);
+
+          setTimeout(() => {
+            const boxElem = document.getElementById(`box-${formattedName.toLowerCase()}`);
+            if (boxElem) boxElem.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 300);
+        } catch (err) {
+          console.error("Firestore compliment save failed:", err);
+          showToast("Could not send. Check Firebase Firestore rules and try again.");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalButtonHtml;
         }
-
-        // Reset Form Inputs
-        document.getElementById("recipientInput").value = "";
-        document.getElementById("messageInput").value = "";
-        document.getElementById("charCounter").innerText = "0";
-
-        showToast(`Secret compliment delivered to ${formattedName}! 💌`);
-
-        setTimeout(() => {
-          const boxElem = document.getElementById(
-            `box-${formattedName.toLowerCase()}`,
-          );
-          if (boxElem) {
-            boxElem.scrollIntoView({ behavior: "smooth", block: "center" });
-          }
-        }, 300);
       };
 
-      /* Like / Reaction Handler */
+      /* Like / Reaction Handler — update the same shared collection */
       window.handleLikeCompliment = async function (id) {
-        audioEngine.playHeartPop();
-
-        const item = window.complimentsData.find((c) => c.id === id);
-        if (!item) return;
-
-        item.likes = (item.likes || 0) + 1;
-
-        if (
-          db &&
-          currentUser &&
-          !id.startsWith("seed-") &&
-          !id.startsWith("local-")
-        ) {
-          try {
-            const docRef = isUsingCustomFirebase
-              ? doc(db, "compliments", id)
-              : doc(
-                  db,
-                  "artifacts",
-                  appId,
-                  "public",
-                  "data",
-                  "compliments",
-                  id,
-                );
-            await updateDoc(docRef, { likes: item.likes });
-          } catch (err) {
-            console.error("Error updating likes in Firestore:", err);
-            saveLocalData();
-          }
-        } else {
-          saveLocalData();
+        if (!db || !currentUser) {
+          showToast("Not connected to the shared database.");
+          return;
         }
-        renderApp();
+        try {
+          await updateDoc(doc(db, "compliments", id), { likes: increment(1) });
+          audioEngine.playHeartPop();
+        } catch (err) {
+          console.error("Error updating likes in Firestore:", err);
+          showToast("Could not update the like. Check Firestore rules.");
+        }
       };
 
       window.updateCharCount = function () {
