@@ -186,6 +186,62 @@
       class="fixed inset-0 pointer-events-none z-50"
     ></canvas>
 
+    <!-- Midterm Good Luck Popup -->
+    <div
+      id="midtermPopup"
+      class="fixed inset-0 z-[9999] flex items-center justify-center bg-rose-950/30 backdrop-blur-md p-5 opacity-100 visible transition-all duration-700"
+    >
+      <div
+        id="midtermPopupCard"
+        class="relative w-full max-w-md overflow-hidden rounded-[2rem] border-2 border-blush-200/80 bg-gradient-to-br from-white via-blush-50 to-blush-100 px-6 py-10 sm:px-9 sm:py-10 text-center shadow-2xl shadow-blush-500/20 animate-bounce-gentle"
+      >
+        <!-- Decorative glow -->
+        <div
+          class="pointer-events-none absolute -left-12 -top-16 h-40 w-40 rounded-full bg-blush-200/50 blur-3xl"
+        ></div>
+
+        <!-- Close button -->
+        <button
+          id="closeMidtermPopup"
+          type="button"
+          aria-label="Close popup"
+          class="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-blush-100 text-xl text-blush-600 transition hover:rotate-90 hover:bg-blush-500 hover:text-white"
+        >
+          &times;
+        </button>
+
+        <!-- Popup content -->
+        <div class="relative z-10">
+
+          <p
+            class="mb-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-blush-600"
+          >
+            A Little Reminder for You ✨
+          </p>
+
+          <h2
+            class="mb-5 font-display text-3xl font-bold leading-tight text-slate-800 sm:text-4xl"
+          >
+            Good Luck for Your
+            <span class="pink-gradient-text block mt-1">
+              Midterms, Girls! 💕
+            </span>
+          </h2>
+
+          <p
+            class="mx-auto mb-5 max-w-xs text-sm font-semibold leading-7 text-rose-900/80 sm:text-base"
+          >
+            Don't panic, you will kill it like the queen you are! 👑
+
+            <span class="mt-2 block font-extrabold text-blush-600">
+              You've got this! 💗
+            </span>
+          </p>
+
+        </div>
+      </div>
+    </div>
+
     <!-- Main Container -->
     <div class="relative z-10 flex flex-col min-h-screen">
       <!-- Top Navigation -->
@@ -590,9 +646,6 @@
         onSnapshot,
       } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-      // =========================================================================
-      // 🔑 STEP 1: PASTE YOUR FIREBASE CONFIG HERE TO ENABLE LIVE SYNC FOR FRIENDS
-      // =========================================================================
       const firebaseConfig = {
         apiKey: "AIzaSyDRCOFT07ltPHhfSOTuPEAMIU-Az6cxOQU",
         authDomain: "anonymous-compliment-model.firebaseapp.com",
@@ -602,7 +655,6 @@
         appId: "1:1092525262550:web:2d0c854968d7898bab2b77",
         measurementId: "G-MS8NB2JBSN",
       };
-      // =========================================================================
 
       // Firebase Config and Variables
       const appId =
@@ -725,9 +777,28 @@
         } catch (err) {
           console.error("Firebase initialization error:", err);
           if (statusEl) statusEl.innerText = "Cloud connection failed 🔴";
-          showToast("Could not connect to Firebase. Check the console and Firebase settings.");
+          showToast(
+            "Could not connect to Firebase. Check the console and Firebase settings.",
+          );
         }
       }
+
+      /* Midterm Popup: auto-close after 10 seconds */
+      window.addEventListener("DOMContentLoaded", () => {
+        const popup = document.getElementById("midtermPopup");
+        const closeButton = document.getElementById("closeMidtermPopup");
+
+        if (!popup) return;
+
+        function closePopup() {
+          popup.classList.add("opacity-0", "invisible");
+          popup.classList.remove("opacity-100", "visible");
+        }
+
+        closeButton?.addEventListener("click", () => {
+          closePopup();
+        });
+      });
 
       // All visitors use this one shared collection in the same Firebase project.
       function getCollectionRef() {
@@ -760,7 +831,9 @@
             console.error("Firestore realtime listener error:", error);
             const statusEl = document.getElementById("syncStatusText");
             if (statusEl) statusEl.innerText = "Firestore access error 🔴";
-            showToast("Could not load shared compliments. Check Firestore rules.");
+            showToast(
+              "Could not load shared compliments. Check Firestore rules.",
+            );
           },
         );
       }
@@ -776,11 +849,14 @@
 
         if (!recipientInput || !messageInput) return;
         if (!db || !currentUser) {
-          showToast("Not connected to the shared database. Please try again shortly.");
+          showToast(
+            "Not connected to the shared database. Please try again shortly.",
+          );
           return;
         }
 
-        const formattedName = recipientInput.charAt(0).toUpperCase() + recipientInput.slice(1);
+        const formattedName =
+          recipientInput.charAt(0).toUpperCase() + recipientInput.slice(1);
         const newCompliment = {
           recipient: formattedName,
           message: messageInput,
@@ -790,7 +866,8 @@
 
         submitBtn.disabled = true;
         const originalButtonHtml = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-sm"></i><span>Sending…</span>';
+        submitBtn.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin text-sm"></i><span>Sending…</span>';
 
         try {
           await addDoc(getCollectionRef(), newCompliment);
@@ -802,12 +879,17 @@
           showToast(`Secret compliment delivered to ${formattedName}! 💌`);
 
           setTimeout(() => {
-            const boxElem = document.getElementById(`box-${formattedName.toLowerCase()}`);
-            if (boxElem) boxElem.scrollIntoView({ behavior: "smooth", block: "center" });
+            const boxElem = document.getElementById(
+              `box-${formattedName.toLowerCase()}`,
+            );
+            if (boxElem)
+              boxElem.scrollIntoView({ behavior: "smooth", block: "center" });
           }, 300);
         } catch (err) {
           console.error("Firestore compliment save failed:", err);
-          showToast("Could not send. Check Firebase Firestore rules and try again.");
+          showToast(
+            "Could not send. Check Firebase Firestore rules and try again.",
+          );
         } finally {
           submitBtn.disabled = false;
           submitBtn.innerHTML = originalButtonHtml;
