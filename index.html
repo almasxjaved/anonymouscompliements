@@ -186,8 +186,6 @@
       class="fixed inset-0 pointer-events-none z-50"
     ></canvas>
 
-   
-
     <!-- Main Container -->
     <div class="relative z-10 flex flex-col min-h-screen">
       <!-- Top Navigation -->
@@ -223,6 +221,18 @@
 
           <!-- Header Actions -->
           <div class="flex items-center gap-2.5">
+            <!-- Browser Push Notifications -->
+            <button
+              id="enableNotificationsBtn"
+              type="button"
+              onclick="enablePushNotifications()"
+              class="px-3 py-2 rounded-full bg-blush-50 hover:bg-blush-100 text-blush-700 border border-blush-200 text-[10px] sm:text-xs font-bold flex items-center gap-1.5 transition"
+              title="Enable new compliment notifications"
+            >
+              <i class="fa-solid fa-bell"></i>
+              <span>Enable Alerts</span>
+            </button>
+
             <!-- Audio Sound Toggle -->
             <button
               id="audioToggleBtn"
@@ -588,9 +598,16 @@
         doc,
         addDoc,
         updateDoc,
+        setDoc,
         increment,
         onSnapshot,
       } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+      import {
+        getMessaging,
+        getToken,
+        onMessage,
+        isSupported,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-messaging.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyDRCOFT07ltPHhfSOTuPEAMIU-Az6cxOQU",
@@ -601,6 +618,11 @@
         appId: "1:1092525262550:web:2d0c854968d7898bab2b77",
         measurementId: "G-MS8NB2JBSN",
       };
+
+      const firebaseVapidKey =
+        "BMG_MvtqTuzWT77BuPnSreafxwzvPZ4eIbNr-GYvZUu1ZR15YwHSTaALCoQfvb63cAHt9HxWfqLvoAIGCir1GGQ";
+      let messaging = null;
+      let messagingServiceWorker = null;
 
       // Firebase Config and Variables
       const appId =
@@ -720,6 +742,7 @@
           const userCred = await signInAnonymously(auth);
           currentUser = userCred.user;
           setupRealtimeListener();
+          await initializePushMessaging();
         } catch (err) {
           console.error("Firebase initialization error:", err);
           if (statusEl) statusEl.innerText = "Cloud connection failed 🔴";
@@ -728,6 +751,111 @@
           );
         }
       }
+
+      /* Browser Push Notifications (FCM) */
+      async function initializePushMessaging() {
+        try {
+          if (!(await isSupported())) return;
+          if (!("serviceWorker" in navigator) || !("Notification" in window))
+            return;
+
+          messaging = getMessaging();
+          messagingServiceWorker = await navigator.serviceWorker.register(
+            "/firebase-messaging-sw.js",
+          );
+
+          onMessage(messaging, async (payload) => {
+            const title =
+              payload.notification?.title || "New Secret Compliment 💌";
+            const body =
+              payload.notification?.body ||
+              "A new compliment has been posted. Open the hub to see it!";
+            if (
+              Notification.permission === "granted" &&
+              messagingServiceWorker
+            ) {
+              await messagingServiceWorker.showNotification(title, {
+                body,
+                data: { url: window.location.origin },
+              });
+            }
+            showToast("A new anonymous compliment has been posted! 💌");
+          });
+
+          // Refresh/store the token on visits where the visitor previously opted in.
+          if (Notification.permission === "granted") {
+            await savePushToken();
+            setNotificationButtonEnabled();
+          }
+        } catch (err) {
+          console.warn(
+            "Push notifications are not available in this browser:",
+            err,
+          );
+        }
+      }
+
+      function setNotificationButtonEnabled() {
+        const button = document.getElementById("enableNotificationsBtn");
+        if (!button) return;
+        button.innerHTML =
+          '<i class="fa-solid fa-bell"></i><span>Alerts Enabled</span>';
+        button.classList.add("opacity-80");
+      }
+
+      async function savePushToken() {
+        if (!messaging || !currentUser || !db) {
+          throw new Error("Firebase messaging is not ready yet.");
+        }
+
+        const token = await getToken(messaging, {
+          vapidKey: firebaseVapidKey,
+          serviceWorkerRegistration: messagingServiceWorker,
+        });
+        if (!token)
+          throw new Error("Could not create a browser notification token.");
+
+        // One document per anonymous visitor/browser. The token is never public-readable.
+        await setDoc(doc(db, "pushTokens", currentUser.uid), {
+          token,
+          updatedAt: Date.now(),
+        });
+      }
+
+      window.enablePushNotifications = async function () {
+        const button = document.getElementById("enableNotificationsBtn");
+        if (!currentUser || !db || !messaging) {
+          showToast("Please wait for the cloud connection, then try again.");
+          return;
+        }
+        if (!(await isSupported())) {
+          showToast("This browser does not support web push notifications.");
+          return;
+        }
+
+        if (button) button.disabled = true;
+        try {
+          const permission = await Notification.requestPermission();
+          if (permission !== "granted") {
+            showToast(
+              "Notifications were not enabled. You can allow them in browser settings.",
+            );
+            return;
+          }
+          await savePushToken();
+          setNotificationButtonEnabled();
+          showToast(
+            "You're subscribed! You'll be notified about every new compliment 💖",
+          );
+        } catch (err) {
+          console.error("Could not enable push notifications:", err);
+          showToast(
+            "Could not enable alerts. Check the VAPID key and Firebase settings.",
+          );
+        } finally {
+          if (button) button.disabled = false;
+        }
+      };
 
       // All visitors use this one shared collection in the same Firebase project.
       function getCollectionRef() {
@@ -799,7 +927,33 @@
           '<i class="fa-solid fa-spinner fa-spin text-sm"></i><span>Sending…</span>';
 
         try {
-          await addDoc(getCollectionRef(), newCompliment);
+          const complimentRef = await addDoc(getCollectionRef(), newCompliment);
+
+          // Ask the Vercel backend to send notifications
+          try {
+            const idToken = await currentUser.getIdToken();
+
+            const response = await fetch("/api/notify", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${idToken}`,
+              },
+              body: JSON.stringify({
+                complimentId: complimentRef.id,
+              }),
+            });
+
+            if (!response.ok) {
+              console.warn(
+                "Notification request failed:",
+                await response.text(),
+              );
+            }
+          } catch (notificationError) {
+            console.warn("Could not send notifications:", notificationError);
+          }
+
           audioEngine.playChime();
           triggerConfettiBurst();
           recipientField.value = "";

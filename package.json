@@ -1,0 +1,24 @@
+{
+  "name": "anonymouscompliements",
+  "version": "1.0.0",
+  "description": "",
+  "main": "firebase-messaging-sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/almasxjaved/anonymouscompliements.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/almasxjaved/anonymouscompliements/issues"
+  },
+  "homepage": "https://github.com/almasxjaved/anonymouscompliements#readme",
+  "dependencies": {
+    "firebase-admin": "^14.5.1"
+  }
+}
